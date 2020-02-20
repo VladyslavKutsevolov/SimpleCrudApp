@@ -1,0 +1,14 @@
+extends layout
+
+block content
+    form.form-group(method="POST" action="/articles/add")
+        label(for= "title") Title
+        input#title.form-control(name="title", value="", type="text")
+        br
+        label(for= "author") Author
+        input#author.form-control(name="author", value="", type="text")
+        br
+        label(for= "body") Body
+        textarea#body.form-control(name="body", value="", type="text")
+        br
+        input.btn.btn-primary(value="Submit", type="submit")
