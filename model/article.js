@@ -1,9 +1,18 @@
 const mongoose = require("mongoose");
 
 const schema = mongoose.Schema({
-  title: String,
-  author: String,
-  body: String
+  title: {
+    type: String,
+    required: true
+  },
+  author: {
+    type: String,
+    required: true
+  },
+  body: {
+    type: String,
+    required: true
+  }
 });
 
 const Article = (module.exports = mongoose.model("Article", schema));

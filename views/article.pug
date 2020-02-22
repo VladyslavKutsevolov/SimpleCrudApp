@@ -3,7 +3,9 @@ extends layout
 block content
     .container
         h2 #{article.title}
-        h5 Written by #{article.author}
+        h5 Written by #{author}
         p #{article.body}
-        a.btn.btn-outline-dark(href= "/article/edit/" + article.id) Edit
-        a.btn.btn-danger.ml-1.delete-article(href= "#", data-id= article.id) Delete
+        if user
+            if user.id ==article.author
+                a.btn.btn-outline-dark(href= "/article/edit/" + article.id) Edit
+                a.btn.btn-danger.ml-1.delete-article(href= "#", data-id= article.id) Delete
