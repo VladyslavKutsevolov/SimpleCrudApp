@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const session = require("express-session");
+const flash = require("connect-flash");
 
 mongoose.connect("mongodb://localhost/crudApp", {
   useNewUrlParser: true,
@@ -20,11 +22,30 @@ app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
-
+// Express session middleware
+app.use(
+  session({
+    secret: "keyboard cat",
+    resave: true,
+    saveUninitialized: true
+  })
+);
+// connect-flush middleware
+app.use(require("connect-flash")());
+app.use(function(req, res, next) {
+  res.locals.messages = require("express-messages")(req, res);
+  next();
+});
+// Model
 const Article = require("./model/article");
 
 //Load view engine
 app.set("view engine", "pug");
+// Route files
+const articles = require("./router/articles");
+const user = require("./router/user");
+app.use("/users", user);
+app.use("/article", articles);
 
 // Homw page
 app.get("/", (req, res) => {
@@ -38,70 +59,6 @@ app.get("/", (req, res) => {
   });
 });
 
-// Add article
-app.get("/articles/add", (req, res) => {
-  res.render("add_article", {
-    title: "Add article"
-  });
-});
-
-// Submit article
-app.post("/articles/add", (req, res) => {
-  const article = new Article();
-  article.title = req.body.title;
-  article.author = req.body.author;
-  article.body = req.body.body;
-
-  article.save(err => {
-    err ? console.log(err) : res.redirect("/");
-  });
-});
-
-// Get single article
-app.get("/article/:id", (req, res) => {
-  const query = req.params.id;
-  Article.findById(query, (err, article) => {
-    err
-      ? console.log(err)
-      : res.render("article", {
-          article
-        });
-  });
-});
-
-// Edit article
-app.get("/articles/edit/:id", (req, res) => {
-  const query = req.params.id;
-  Article.findById(query, (err, article) => {
-    err
-      ? console.log(err)
-      : res.render("edit_article", {
-          title: "Edit Article",
-          article
-        });
-  });
-});
-
-// Edit article
-app.post("/articles/edit/:id", (req, res) => {
-  const query = { _id: req.params.id };
-  const article = {};
-  article.title = req.body.title;
-  article.author = req.body.author;
-  article.body = req.body.body;
-
-  Article.updateOne(query, article, err => {
-    err ? console.log(err) : res.redirect("/");
-  });
-});
-// Delete article
-app.delete("/article/:id", (req, res) => {
-  const query = { _id: req.params.id };
-
-  Article.deleteOne(query, err => {
-    err ? console.log(err) : res.send("Success");
-  });
-});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);

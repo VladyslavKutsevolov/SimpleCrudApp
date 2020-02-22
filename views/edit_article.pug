@@ -1,7 +1,7 @@
 extends layout
 
 block content
-    form.form-group(method="POST" action="/articles/edit/"+article._id)
+    form.form-group(method="POST" action="/article/edit/"+article._id)
         label(for= "title") Title
         input#title.form-control(name="title", value=article.title, type="text")
         br
